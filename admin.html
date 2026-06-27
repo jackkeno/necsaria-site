@@ -238,6 +238,21 @@ a{ color:inherit; text-decoration:none; }
 .field-hint{ font-size:0.74rem; color:var(--ink-faint); margin-top:5px; line-height:1.4; }
 .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
+.img-preview{
+  display:block;
+  margin-top:10px;
+  width:64px; height:64px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid var(--border);
+  background:var(--surface);
+}
+.img-preview.img-preview-wide{
+  width:100%; height:90px;
+  border-radius:var(--radius-sm);
+}
+.img-preview.hidden{ display:none; }
+
 .fieldset-title{
   font-size:0.7rem; font-weight:700; text-transform:uppercase;
   letter-spacing:0.1em; color:var(--accent);
@@ -448,6 +463,24 @@ a{ color:inherit; text-decoration:none; }
         <input type="text" id="in_location" placeholder="Ex : Abidjan, Côte d'Ivoire">
       </div>
 
+      <div class="fieldset-title">Photos</div>
+      <div class="field-group">
+        <label for="in_avatar">Photo de profil (lien internet)</label>
+        <input type="url" id="in_avatar" placeholder="https://...">
+        <p class="field-hint">Colle ici le lien d'une image déjà en ligne (ex: depuis Google Drive, Imgur, ou un site d'hébergement d'images). Laisse vide si tu n'en as pas encore — un fond neutre s'affichera à la place.</p>
+        <img class="img-preview hidden" id="previewAvatar" alt="Aperçu photo de profil">
+      </div>
+      <div class="field-group">
+        <label for="in_cover">Photo de couverture (lien internet)</label>
+        <input type="url" id="in_cover" placeholder="https://...">
+        <img class="img-preview img-preview-wide hidden" id="previewCover" alt="Aperçu photo de couverture">
+      </div>
+      <div class="field-group">
+        <label for="in_logo">Logo personnel (optionnel, lien internet)</label>
+        <input type="url" id="in_logo" placeholder="https://...">
+        <img class="img-preview hidden" id="previewLogo" alt="Aperçu logo">
+      </div>
+
       <div class="fieldset-title">Contact</div>
       <div class="field-group">
         <label for="in_phone">Téléphone</label>
@@ -555,10 +588,10 @@ a{ color:inherit; text-decoration:none; }
    ============================================================ */
 // ⚠️ Remplace cette URL par celle de ton Worker Cloudflare une fois déployé
 // (ex: "https://necsaria-admin.tonpseudo.workers.dev")
-const WORKER_URL = "https://necsaria-admin.keno-jack20.workers.dev";
+const WORKER_URL = "https://necsaria-admin.YOUR-SUBDOMAIN.workers.dev";
 
 // Adresse publique du site, utilisée pour afficher les liens clients
-const PUBLIC_SITE_URL = "https://nexaria.com";
+const PUBLIC_SITE_URL = "https://jackkeno.github.io/necsaria-site/clients";
 
 const SESSION_KEY = "necsaria_admin_session";
 
@@ -703,7 +736,7 @@ function renderClientList(clients){
         <div class="client-meta">${c.role || ""}${c.role && c.company ? " · " : ""}${c.company || ""}</div>
       </div>
       <div class="client-actions">
-        <a class="icon-btn view" href="${PUBLIC_SITE_URL}/p/${c.slug}/" target="_blank" rel="noopener" title="Voir la page">
+        <a class="icon-btn view" href="${PUBLIC_SITE_URL}/${c.slug}.html" target="_blank" rel="noopener" title="Voir la page">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
         <button class="icon-btn edit" data-slug="${c.slug}" title="Modifier">
@@ -870,7 +903,7 @@ function showSuccessScreen(slug, name, isNew){
   $("successScreen").classList.remove("hidden");
   toggleFormFooter(false);
 
-  const fullUrl = `${PUBLIC_SITE_URL}/p/${slug}/`;
+  const fullUrl = `${PUBLIC_SITE_URL}/${slug}.html`;
   $("successTitle").textContent = isNew ? "Page créée avec succès" : "Page mise à jour";
   $("successText").textContent = isNew
     ? `La page de ${name} est en ligne. Tu peux maintenant générer son QR code et préparer sa carte NFC.`
